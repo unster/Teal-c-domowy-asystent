@@ -1,0 +1,248 @@
+I. Niezbędny sprzęt
+Do przygotowania Sary użyłem Raspberry Pi Zero. Ta wersja posiada jeden port micro USB, więc niezbędny był mi kabel USB OTG oraz HUB USB, aby podłączyć kartę dźwiękową i kartę Wi-Fi.
+
+Oto lista sprzętu, który był niezbędny w moim przypadku:
+- Rasberry Pi Zero (ja zapłaciłem ok. 60 PLN)
+- karta Wi-Fi na USB (28 PLN)
+- karta muzyczna na USB (12 PLN)
+- kabel USB OTG (2 PLN)
+- mikrofon (5 PLN)
+- najzwyklejsze głośniki (15 PLN)
+- opcjonalnie HUB USB zasilany zewnętrznie, aby zredukować szumy na mikrofonie (18 PLN)
+- karta (micro) SD + adapter (30 PLN)
+
+Łatwo policzyć, że całość to koszt około 180 PLN. Tak naprawdę to musiałem dokupić tylko kartę dźwiękową i mikrofon bo wszystko inne miałem w swojej szufladzie z elektroniką.
+
+Kartę dźwiękową kupiłem dokładnie taką:
+http://allegro.pl/karta-muzyczna-dzwiekowa-5-1-na-usb-mikrofon-i6474551271.html 
+Mikrofon kupiłem dokładnie taki:
+http://allegro.pl/czuly-i-mocny-mikrofon-do-komputera-laptopa-3-5mm-i6596563399.html
+
+Całość zmieści się spokojnie na karcie 2GB.
+
+II. Instalacja systemu
+Zakładam, że to Twoja pierwsza przygoda z instalacją systemu dla Raspberry. Jeżeli system masz już zainstalowany i skonfigurowany to spokojnie możesz przeskoczyć do punktu VI
+
+1. Ściągamy sobie Rasbiana stąd: https://downloads.raspberrypi.org/raspbian_lite_latest
+2. Rozpakowujemy ściągnięty plik 
+3. Ściągamy i instalujemy Win32DiskImager stąd: https://sourceforge.net/projects/win32diskimager/files/latest/download
+4. Wkładamy kartę do czytnika w kompie. Dla pewności sprawdzamy pod jaką literą karta jest zamontowana w systemie
+5. Uruchamiamy Win32DiskImager, ładujemy obraz Raspbiana i wybieramy literę naszej karty pamięci i klikamy [zapisz]
+6. Po zakończeniu wyciągamy kartę z czytnika
+
+Właśnie dla swojego Raspberry zainstalowałeś system operacyjny! Teraz wypadałoby zająć się jego wstępną konfiguracją :)
+
+III. Konfiguracja Wi-Fi i włączenie SSH
+W pierwszej kolejności musimy podać naszej malince informację o nazwie naszej sieci Wi-Fi, do której ma się podłączyć oraz o haśle do tej sieci. Od razu włączymy również SSH. Zrobimy to w bardzo łatwy sposób - edytując i wgrywając dwa pliki na kartę pamięci. 2. 
+
+1. Włóż kartę SD z zainstalowanym systemem do czytnika.
+2. Pobierz paczkę z dwoma plikami tekstowymi stąd: https://www.dropbox.com/s/l9g303jgh8ueth2/krok3-wpa-ssh.zip?dl=1
+3. W pliku wpa_supplicant.conf wpisz nazwę swojej sieci Wi-Fi oraz hasło do niej i zapisz zmiany
+4. Przegraj oba pliki (wpa_supplicant.conf oraz ssh) na partycję /boot na karcie SD
+5. Wyciągamy kartę z czytnika i wkładamy do swojego Raspberry
+6. Podłączamy kartę Wi-Fi na USB
+3. Podłączamy do zasilania i czekamy około 30-40 sekund
+
+IV. Konfiguracja routera
+W tym kroku przydzielimy dla Raspberry statyczny adres IP w naszej sieci. Zrobimy to z poziomu panelu administracyjnego routera.
+
+1. Logujemy się do panelu administracyjnego routera i sprawdzamy czy Raspberry się do niego podłączyło. Jeżeli RPi się nie podłączyło to wracamy do punkty kroku III, ale tym razem bardzo dokładnie sprawdzamy każdy znak, to czy powinien być pisany wielką czy małą literą etc.
+2. Skoro Raspberry jest podłączone do routera to wypadałoby przydzielić mu stałe IP w naszej sieci. Poszukaj w ustawieniach routera tej opcji i przydziel swojej malince jakiś stały adres.
+3. Dla pewności restartujemy Raspberry i sprawdzamy czy po 30-40 sekundach z poziomu panelu administracyjnego routera widzimy malinkę z ustawiony wcześniej IP.
+
+V. Konfiguracja SSH
+W tym kroku połączymy się zdalnie z Raspberry. Dzięki temu nie będziemy potrzebowali podczas konfiguracji malinki podłączać do niej monitora ani klawiatury.
+
+1. Ściągamy program PuTTY: https://the.earth.li/~sgtatham/putty/latest/w32/putty.exe (lub w wersji 64bit: https://the.earth.li/~sgtatham/putty/latest/w64/putty.exe)
+2. Uruchamiamy go i wpisujemy w pole "Host Name" IP naszego Raspberry (to, które wcześniej ustawialiśmy jako statyczne IP w panelu administracyjnym routera). Port zostawiamy domyślny, czyli 22
+3. Łączymy się klikając [Open]
+4. Jako login wpisujemy: pi (i potwierdzamy enterem)
+5. Jako hasło wpisujemy: raspberry (i również potwierdzamy enterem)
+6. Wypadałoby zmienić od razu hasło z domyślnego. Aby to uczynić wpisz: passwd (i potwierdź enterem)
+7. Wpisz stare hasło - raspberry (i potwierdź enterem)
+8. Wpisz nowe hasło (i potwierdź enterem)
+9. Ponownie wpisz nowe hasło (i potwierdź enterem)
+
+Super! Właśnie zakończyliśmy podstawową konfigurację systemu :)
+
+TIP: Aby wkleić skopiowany stąd tekst do konsoli PuTTy używamy kombinacji klawiszy SHIFT + INS
+
+VI. Instalacja niezbędnych paczek
+Kilka rzeczy musimy jeszcze doinstalować, aby wszystkie skrypty działały jak należy. Aby doinstalować brakujące pakiety wystarczy, że będziesz przeklejać do konsoli poszczególne polecenia.
+
+1. Zaczynamy od wpisania w konsoli: sudo apt-get update 
+2. Następnie: sudo apt-get dist-upgrade
+3. Jeżeli istnieje możliwość aktualizacji systemu to wciskamy klawisz “Y” i potwierdzamy enterem.
+4. Teraz wpisujemy: sudo apt-get install sox flac python-dev python-pip python-lxml mpg123
+5. Wciskamy klawisz “Y” i potwierdzamy enterem.
+6. Instalujemy bibliotekę odpowiedzialną za rozpoznawanie mowy i kilka innych modułów pythona: sudo pip install SpeechRecognition tendo bs4 feedparser psutil
+
+VII. Instalacja i konfiguracja WinSCP
+Myślę, że dla początkujących użytkowników Raspberry ściąganie i przerzucanie plików na malinkę będzie łatwiejsze z poziomu WinSCP niż za pomocą konsoli.
+
+1. Ściągamy WinSCP: https://winscp.net/download/WinSCP-5.9.4-Setup.exe i instalujemy
+2. Po uruchomieniu pojawi się okno, w którym należy podać dane do połączenia się z Raspberry. W polu "Nazwa Hosta" podajemy numer IP malinki, nazwę użytkownika wpisujemy jako pi i wpisujemy hasło, które ustawiliśmy w kroku V.
+3. Po kliknięciu na przycisk [Logowanie] zostaniemy połączeni z Raspberry.
+4. Katalogiem, na którym będziemy pracować będzie nasz katalog domowy, czyli /home/pi/ - możesz przejść teraz do tego katalogu bo od następnego kroku już będziemy na nim pracować.
+
+VIII. Konfiguracja i testy dźwięku
+Teraz zajmiemy się uruchomieniem karty muzycznej i ustawieniem jej jako główne źródło dźwięku.
+
+1. W pierwszej kolejności ściągamy plik: https://www.dropbox.com/s/zbeu35mu4mmhgze/krok8-audio.zip?dl=1 rozpakowujemy i umieszczamy zawartość w katalogu domowym, czyli w /home/pi/ - dzięki temu karta dźwiękowa będzie ustawiona jako główne źródło dźwięku. Drugi plik (beep.wav) przyda nam się do sprawdzenia czy dźwięk działa.
+2. Teraz podłączamy kartę dźwiękową do Raspberry
+3. Do karty dźwiękowej podepnij mikrofon i głośniki
+4. Restartujemy system wpisując w konsoli: sudo reboot
+5. Po około 30-40 sekundach będziemy mogli znowu zalogować się poprzez PuTTY i WinSCP
+6. W konsoli wpisujemy: aplay -q -D plughw:1,0 /home/pi/beep.wav 
+
+Usłyszysz krótkie piknięcie w głośnikach. Jesteśmy w domu - wszystko działa jak powinno :)
+
+IX. Przetwarzanie tekstu na mowę
+To chyba najprostszy krok. Za chwilę Raspberry przemówi do Ciebie ludzkim głosem.
+
+1. Ściągamy plik: https://www.dropbox.com/s/sj9t8utzemhs48o/speech.sh?dl=1 i umieszczamy go w naszym katalogu domowym, czyli /home/pi
+2. W konsoli wpisujemy: chmod +x speech.sh
+
+Dzięki tej komendzie nadamy skryptowi prawo do tego, aby mógł być uruchamiany. Czas na test.
+Wpisz w konsoli: ./speech.sh raz dwa trzy
+Wow! Raspberry przemówiło :)
+
+X. Pobranie właściwych skryptów
+Teraz pobierzemy właściwe skrypty, które pozwolą nam porozmawiać z Raspberry.
+
+1. Pobierz paczkę: https://www.dropbox.com/s/94z3zntdk18nouz/sara.zip?dl=1
+2. Rozpakuj ją i umieść zawartość w katalogu domowym - /home/pi/
+
+To tyle. Sara jest gotowa do działania a nam została jeszcze kwestia ustawienia mikrofonu.
+
+XI. Ustawienie mikrofonu
+Ustawienie mikrofonu będzie sprawą bardzo indywidualną i myślę, że nie ma uniwersalnych jego ustawień - na różnych kartach dźwiękowych i różnych mikrofonach wartości będą się różniły od tych, które podaję w poniższym przykładzie.
+
+1. Sprawdzamy czy mikrofon działa wpisując w konsoli: arecord -D plughw:1,0 -f cd /home/pi/test.wav
+2. Wypowiedz kilka wyrazów .
+3. Zakończ nagrywanie wciskając kombinację klawiszy CTRL + C.
+4. Wpisz w konsoli: aplay -q -D plughw:1,0 /home/pi/test.wav 
+5. Powinieneś usłyszeć nagraną próbkę dźwięku - jeżeli jest czysta i jesteś w stanie zrozumieć bez problemu każde słowo to nie musisz już nic robić i możesz przejść do kroku XII.
+6. Jeżeli wydaje Ci się, że nagrana próbka jest za cicha lub za głośna - wpisz w konsoli: alsamixer
+7. Wciśnij klawisz F5, aby pokazać wszystkie źródła dźwięku, strzałkami lewo-prawo zaznacz kontrolkę mikrofonu (jeżeli masz dwie kontrolki mikrofonu to wybierz tę, która ma dopisek CAPTURE), a następnie strzałkami góra-dół dopasuj poziom głośności.
+8. Wciśnij klawisz ESC, aby wyjść z miksera powtórz raz jeszcze punkty od 1 do 4. Jeżeli uznasz poziom nagranej próbki za odpowiedni to zapisz ustawienia miksera wpisując w konsoli: sudo alsactl store 
+
+XII. Testujemy Sarę
+
+1. Aby uruchomić skrypt Sary, wpisz w konsoli: python sara.py
+2. Jeżeli chcesz wyłączyć uruchomiony w ten sposób skrypt, wciśnij kombinację klawiszy CTRL + C. Prawdopodobnie będziesz musiał wcisnąć ją nawet kilka razy zanim skrypt zostanie wyłączony.
+2. Po uruchomieniu skryptu sara.py powinieneś usłyszeć w głośnikach informację o uruchomieniu, a w konsoli powinny pokazać się informacje o poziomie głośności ("Maksymalna amplituda: .XYZ") nagrywanych próbek dźwięku.
+3. Powiedz "Sara". W konsoli powinieneś zobaczyć informację o wykryciu głośnej próbki dźwięku i wysłaniu jej do serwerów Google.
+4. Jeżeli dostajesz w konsoli informacje o tym, że Google nie rozpoznało próbki dźwięku - trzeba będzie wrócić do poprzedniego kroku i lepiej ustawić mikrofon
+5. Jeżeli podczas wypowiadania słów Maksymalna amplituda nie przekracza poziomu .30 lub cały czas przekracza tę wartość to będziesz musiał dostosować minimalny poziom dla wysyłanej do Google próbki w pliku sara.py. Wartość tę znajdziesz w linijce 50 - wystarczy, że zmienisz wartość 0.3 w wyrażeniu "maxAmpValue < 0.3" na mniejszą (jeżeli próbki nie są w ogóle wysyłane) lub większą (jeżeli były wysyłane cały czas)
+
+Zakładam, że w tym kroku udało Ci się dostosować wszystko tak, aby Sara “rozumiała” co mówisz.
+
+XIII. Konfiguracja autostartu
+W tym kroku ustawimy w prosty sposób to, aby Sara uruchamiała się podczas startu Raspberry.
+
+1. Za pomocą WinSCP edytuj plik /home/pi/.bashrc
+2. Na końcu pliku dopisz linijkę: python sara.py
+3. Zapisz plik
+4. W konsoli wpisz: sudo reboot
+5. Poczekaj 30-40 sekund i ciesz się swoją nową zabawką :)
+
+TIP (od @beliver): plik .bashrc jest ukryty, więc w WinSCP trzeba pokazać ukryte pliki. Można to zrobić wchodząc w: opcje -> preferencje -> panele -> pokaż ukryte katalogi
+
+XIV. Moduły
+Jeżeli chcesz zmienić główne słowo klucz z *ara* na inne to wystarczy zmienić odpowiednio 192 linijkę pliku sara.py. Wpisane jest tam teraz “ara” z racji tego, że Google czasem rozpoznawał słowo “sara” jako “stara”.
+
+Słowa klucze działają na takiej zasadzie, że jeżeli takim słowem jest np. “wiki” to Sara zareaguje na każdą odmianę tego słowa - WIKIpedia, WIKIpedii, WIKIpedię etc.
+W paczce, którą masz na swoim Raspberry znajdziesz następujące moduły:
+
+1. Słowo klucz: powtórz
+Przez 5 sekund możesz mówić cokolwiek, a Sara to powtórzy. Funkcja bardzo dobrze nadaje się do testowania systemu w kroku XII.
+
+2. Słowo klucz: odliczanie, alarm, minutnik
+Po tej komendzie możesz powiedzieć na ile minut Sara ma ustawić odliczanie. Po upłynięciu tego czasu włączy się alarm
+
+3. Słowo klucz: wiki
+Po tej komendzie możesz powiedzieć słowo, które Sara ma wyszukać w wikipedii
+
+4. Słowo klucz: wydarzenia, wiadomości
+Po tej komendzie Sara spyta się jakich wiadomości chcesz posłuchać. Możesz odpowiedzieć:
+polska, polski
+świat, świata
+
+5. Słowo klucz: status
+Sara powie ile czasu jest uruchomiona oraz ile pamięci operacyjnej jest zajętej. Jakiś problem mam z obciążeniem CPU - nie chce mi się tego teraz rozkminiać.
+
+6. Słowo klucz: ciekawostka, ciekawostkę
+Usłyszysz losową ciekawostkę
+
+7. Słowo klucz: cytat
+Usłyszysz jakiś losowy cytat
+
+8. Słowo klucz: data, datę
+Dowiesz się jaki dzień jest dzisiaj
+
+9. Słowo klucz: kawał, żart
+Usłyszysz losowego suchara
+
+10. Słowo klucz: godzina, godzinę
+Dowiesz się jaka jest godzina
+
+11. Słowo klucz: euro
+Dowiesz się jaki jest aktualny kurs euro
+
+12. Słowo klucz: dolar
+Dowiesz się jaki jest aktualny kurs dolara
+
+13. Słowo klucz: restart
+Sara się zrestartuje
+
+XV. Skrypt: Sprawdzanie maili
+Na przykładzie gmaila (IMAP) pokażę jak łatwo można sprawdzić ilość nieprzeczytanych wiadomości na naszej skrzynce mailowej. 
+
+1. Zaczynamy od wygenerowania dodatkowego hasła do gmaila. Zrobimy to tutaj: https://security.google.com/settings/security/apppasswords 
+2. Z rozwijanej listy “Wybierz aplikację” wybieramy “Poczta”
+3. Z rozwijanej listy “Wybierz urządzenie” wybieramy “Inne” i wpisujemy własną nazwę np.: Raspberry
+4. Klikamy [Wygeneruj] i zapisujemy nowo utworzone hasło. Zrobiliśmy to po to, aby nie przechowywać swojego hasła do gmaila w kodzie skryptu.
+5. Pobieramy skrypt do sprawdzania maila stąd: https://www.dropbox.com/s/w7237k6yz6dlbnh/gmail.py?dl=1
+6. W pliku edytujemy nazwę użytkownika i wygenerowane wcześniej hasło
+7. Gotowe - skrypt zwraca informacje o ilości nieprzeczytanych wiadomości
+
+Wypadałoby dodać do skryptu odmianę słowa “wiadomości”, ale to zostawiam dla ambitnych ;)
+
+XVI. Skrypt: Sprawdzanie kalendarza Google
+1. Instalujemy sobie bibliotekę gcalcli wpisując w konsoli: sudo pip install gcalcli
+2. Musimy teraz dać dostęp do naszego kalendarza. Wpisujemy w konsoli: gcalcli list --noauth_local_webserver
+3. Kopiujemy link, który w konsoli się pokazał. Zaczyna się od on https://accounts.google.com/o/oauth2... (w PuTTY wystarczy zaznaczyć tekst, aby skopiował się on od razu do schowka).
+4. Wklejamy link do okna przeglądarki. I klikamy [Zezwól].
+5. Pojawi nam się kod, który kopiujemy sobie do schowka.
+6. Kod wklejamy do konsoli kombinacją klawiszy SHIFT + INS. Potwierdzamy enterem.
+7. Pobieramy skrypt: https://www.dropbox.com/s/hmzxo1seqfb42oo/kalendarz.py?dl=1
+8. Po uruchomieniu skryptu Sara przeczyta wydarzenia z kalendarza na 5 dni do przodu.
+
+XVII. Skrypt: Sprawdzanie pogody
+1. Pobieramy skrypt odczytujący pogodę: https://www.dropbox.com/s/jmcq7tu15w6ujx3/pogoda.py?dl=1
+2. Zasada działania jest taka, że jako parametr podaje się nazwę miasta (bez polskich znaków), czyli np.: python pogoda.py wroclaw
+
+XVIII. Skrypt: Sprawdzanie nowych filmów na torrentach
+Skrypt sprawdza ostatnie 10 filmów dodanych na stronie https://yts.ag/browse-movies a następnie pobiera polski tytuł, rok premiery, ocenę i opis z filmwebu.
+Dodatkowo daje możliwość ściągnięcia pliku .torrent dla wybranego filmu na dysk. W razie potrzeby ściągnięcie pliku na dysk można też niewielkim nakładem czasu zamienić na dodanie pliku do klienta sieci torrent.
+
+1. Ściągamy paczkę: https://www.dropbox.com/s/my7nq9zquie3sdj/torrent.zip?dl=1
+2. Rozpakowujemy i wrzucamy na Raspberry
+
+Aby sprawdzić informacje o filmie wpisujemy: python torrent.py X
+gdzie X to cyfra z zakresu 0-9
+
+Aby pobrać plik .torrent z danym filmem wpisujemy: python torrent.py X torrent
+gdzie X to cyfra z zakresu 0-9
+Ścieżka pobierania plików .torrent jest ustawiona na /home/pi/torrenty/ ale można ją zmienić edytując plik torrent.py
+
+XIX. Skrypt: sprawdzenie czasu dojazdu do określonego miejsca
+Skrypt sprawdza czas dojazdu samochodem z domu do dowolnego miejsca. Uwzględnia korki. Dane pobierane są z Google Maps i do poprawnego działania niezbędne będzie wygenerowanie swojego klucza dostępowego do API.
+
+Soon…
+
+XX. Sprawdzanie jakości i oceny powietrza dla naszej lokalizacji 
+Skrypt pobiera z aqicn.org informacje o jakości powietrza w naszej lokalizacji. Lokalizacja określana jest na podstawie adresu IP. Aby można było używać skryptu niezbędne będzie wygenerowanie swojego klucza dostępowego do API AQICN.
+
+Soon...
