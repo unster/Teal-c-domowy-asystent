@@ -2,10 +2,10 @@
 ##!/usr/bin/env python
 
 from bs4 import BeautifulSoup
-import urllib2, subprocess
+import urllib.request, urllib.error, urllib.parse, subprocess
 
 url = "http://www.kursywalutnbp.eu/widget/?currencies=USD"
-data = urllib2.urlopen(url).read()
+data = urllib.request.urlopen(url).read()
 soup = BeautifulSoup(data, "lxml")
 div = soup.find("td", { "class" : "currency-rate-column" })
 kurs = ''.join(map(str, div.contents))

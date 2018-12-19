@@ -5,6 +5,7 @@ import sys
 import subprocess
 import os.path
 import time
+import importlib
 from subprocess import Popen, PIPE, STDOUT
 import speech_recognition as sr
 from os import path
@@ -12,7 +13,7 @@ from tendo import singleton
 from random import randint
 me = singleton.SingleInstance()
 
-reload(sys)  
+importlib.reload(sys)  
 sys.setdefaultencoding('utf8')
 
 
@@ -31,8 +32,7 @@ def transcribe(duration):
 
 	#Nagraj próbkę dźwięku
 	#------------------------------------
-
-    	os.system('arecord -D plughw:1,0 -f cd -c 1 -t wav -d ' + str(duration) + '  -q -r 16000 ' + filename)
+	os.system('arecord -D plughw:1,0 -f cd -c 1 -t wav -d ' + str(duration) + '  -q -r 16000 ' + filename)
 
 
 	#Sprawdź czy próbka dźwięku jest wystarczająco głośna
@@ -43,7 +43,7 @@ def transcribe(duration):
 	maxAmpStart = soxOutput.find("Maximum amplitude")+24
 	maxAmpEnd = maxAmpStart + 7
 	maxAmpValueText = soxOutput[maxAmpStart:maxAmpEnd]
-	print "Maksymalna amplituda: " + maxAmpValueText
+	print("Maksymalna amplituda: " + maxAmpValueText)
 	maxAmpValue = float(maxAmpValueText)
 	time.sleep(0.05)
 	#if (maxAmpValue < 0.1) or (0.275 < maxAmpValue < 0.3) :
@@ -60,8 +60,7 @@ def transcribe(duration):
 		audio = r.record(source)
 
 	#Wyślij próbkę do Google
-	#------------------------------------	
-	
+	#------------------------------------		
 	try:
 		final_result = r.recognize_google(audio, language="pl-PL")
 		print("Rozpoznałam tekst jako: " + final_result)
@@ -164,7 +163,7 @@ def listenForCommand():
 
 	elif command.lower().find("restart")>-1 :
                 os.system('python /home/pi/Sara/restart.py')
-
+	# TODO: dodać kolejne funkcje
 
 		
 
@@ -184,7 +183,7 @@ while True:
 	
 	#Słuchaj słowa klucza
 	#------------------------------------	
-        spokenText = transcribe(3) ;
+        spokenText = transcribe(3) ; #potrzebny ten średnik?
 	
 	if len(spokenText) > 0: 
         	print time.strftime("%Y-%m-%d %H:%M:%S ")  + "Słowo-klucz: " + spokenText
